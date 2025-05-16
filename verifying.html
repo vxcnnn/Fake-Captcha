@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Just a moment...</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #f6f9fc, #eef4f9);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #222;
+    }
+
+    main {
+      background: white;
+      padding: 48px 42px;
+      border-radius: 12px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .spinner {
+      width: 52px;
+      height: 52px;
+      border: 7px solid #cfd7de;
+      border-top-color: #1a73e8;
+      border-radius: 50%;
+      margin: 0 auto 36px auto;
+      animation: spin 1.3s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #verifying-text {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    #message {
+      font-size: 16px;
+      color: #555;
+      margin-top: 20px;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    #message.visible {
+      opacity: 1;
+    }
+
+    #error-container {
+      display: none;
+    }
+
+    #error-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #e53935;
+    }
+
+    #error-desc {
+      font-size: 16px;
+      margin-top: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="spinner" id="spinner" aria-hidden="true"></div>
+    <div id="verifying-text">Verifying.</div>
+    <div id="message">This might take a while due to our services having high demands.</div>
+
+    <div id="error-container">
+      <div id="error-title">Failed</div>
+      <div id="error-desc">Network Error. Try again or check your connection.</div>
+    </div>
+  </main>
+
+  <script>
+    const verifyingText = document.getElementById('verifying-text');
+    const message = document.getElementById('message');
+    const spinner = document.getElementById('spinner');
+    const errorContainer = document.getElementById('error-container');
+
+    const steps = ["Verifying.", "Verifying..", "Verifying...", "Verifying..", "Verifying."];
+    let index = 0;
+
+    const cycle = setInterval(() => {
+      verifyingText.textContent = steps[index % steps.length];
+      index++;
+    }, 600);
+
+    // Show demand message after 6s
+    setTimeout(() => {
+      message.classList.add('visible');
+    }, 6000);
+
+    // After 11s, clear everything and show failed message
+    setTimeout(() => {
+      clearInterval(cycle);
+      spinner.style.display = "none";
+      verifyingText.style.display = "none";
+      message.style.display = "none";
+      errorContainer.style.display = "block";
+    }, 11000);
+  </script>
+</body>
+</html>
