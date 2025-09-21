@@ -17,3 +17,7 @@ with your own link with a .ps1 file hosted or keep it the same if the file is ho
 
 # if you want to see what the sites look like
 download this [Latest](https://github.com/vxcnnn/Fake-Captcha/archive/refs/heads/main.zip) and open the thing in cmd and type "npm install vercel" and then do "vercel" and set everything up then do "vercel --prod" and go to the link
+
+
+
+chatgpt code (used just to combine everything in 1, as i was lazy)
