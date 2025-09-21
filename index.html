@@ -7,8 +7,6 @@
   <title>Just a moment...</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-
-    /* Reset and base styles */
     *, *::before, *::after {
       box-sizing: border-box;
     }
@@ -46,7 +44,6 @@
         0 12px 24px rgba(0, 0, 0, 0.2);
       animation: fadeInUp 0.8s ease forwards;
       opacity: 0;
-      /* For smooth scaling on small devices */
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -171,7 +168,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      /* Prevent selection */
       user-select: none;
     }
     #captcha-container.visible {
@@ -190,12 +186,11 @@
       background: #f9fafb;
       transition: box-shadow 0.5s ease, transform 0.3s ease;
       overflow: hidden;
-      /* prevent any scrollbars */
       scrollbar-width: none;  /* Firefox */
       -ms-overflow-style: none;  /* IE 10+ */
     }
     iframe#captcha-frame::-webkit-scrollbar {
-      display: none;  /* Safari and Chrome */
+      display: none; 
     }
     iframe#captcha-frame:hover,
     iframe#captcha-frame:focus {
@@ -205,8 +200,6 @@
       outline: none;
       transform: scale(1.04);
     }
-
-    /* Responsive adjustments */
     @media (max-width: 520px) {
       main {
         padding: 36px 24px 42px 24px;
@@ -232,7 +225,6 @@
       }
     }
     
-    /* Additional subtle animations for background */
     @keyframes subtleGlowPulse {
       0%, 100% {
         box-shadow:
@@ -247,7 +239,6 @@
       animation: subtleGlowPulse 4s ease-in-out infinite alternate;
     }
 
-    /* Visually hidden but accessible for screen readers */
     .sr-only {
       position: absolute;
       width: 1px; height: 1px;
@@ -279,45 +270,36 @@
       const paragraphs = document.querySelectorAll('main p:not(.redirecting)');
 
       setTimeout(() => {
-        // Fade out spinner
         spinner.style.transition = 'opacity 0.7s ease';
         spinner.style.opacity = '0';
 
-        // Fade out paragraphs except redirecting text
         paragraphs.forEach(p => {
           p.style.transition = 'opacity 0.7s ease';
           p.style.opacity = '0';
           p.style.pointerEvents = 'none';
         });
 
-        // Show redirecting text
         redirectText.classList.add('visible');
-
-        // Remove spinner and paragraphs from DOM after fadeout
         setTimeout(() => {
           spinner.style.display = 'none';
           paragraphs.forEach(p => p.style.display = 'none');
           redirectText.focus();
         }, 700);
 
-        // Show captcha container with fade-in and slide up
         captchaContainer.classList.add('visible');
 
-        // Create iframe
         const iframe = document.createElement('iframe');
 
         iframe.id = 'captcha-frame';
         iframe.title = 'Human verification captcha';
         iframe.src = 'captcha.html';
         iframe.setAttribute('tabindex', '0');
-        iframe.setAttribute('scrolling', 'no');  // Disable scrolling
+        iframe.setAttribute('scrolling', 'no'); 
 
-        // Inline style for no scrolling, full fit handled by content
         iframe.style.overflow = 'hidden';
 
         captchaContainer.appendChild(iframe);
 
-        // Focus management for accessibility
         captchaContainer.focus();
 
       }, 5000);
